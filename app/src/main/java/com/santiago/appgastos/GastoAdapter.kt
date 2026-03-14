@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class GastoAdapter(private val lista: List<MainActivity.Gasto>) : RecyclerView.Adapter<GastoAdapter.GastoViewHolder>() {
+class GastoAdapter(private val lista: List<Gasto>) : RecyclerView.Adapter<GastoAdapter.GastoViewHolder>() {
 
     class GastoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvConcepto = view.findViewById<TextView>(R.id.tvConceptoItem)
