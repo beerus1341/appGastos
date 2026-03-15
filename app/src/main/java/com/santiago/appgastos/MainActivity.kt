@@ -11,6 +11,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         // 2. Configuramos el RecyclerView
         val rv = findViewById<RecyclerView>(R.id.rvGastos)
         rv.layoutManager = LinearLayoutManager(this)
+        cargarDatos()
         adaptador = GastoAdapter(listaDeGastos)
         rv.adapter = adaptador
 
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
             if (importe.isNotEmpty() && concepto.isNotEmpty()) {
                 // Añadimos el gasto
                 listaDeGastos.add(Gasto(concepto, importe))
+                guardarDatos()
 
                 // Notificamos al adaptador
                 adaptador.notifyDataSetChanged()
@@ -61,4 +65,36 @@ class MainActivity : AppCompatActivity() {
 
         tvTotal.text = "Total: ${String.format("%.2f", suma)} €"
     }
+
+    // Funcion para guardar
+
+    private fun guardarDatos(){
+        val sharedPreferences = getSharedPreferences("mis_gastos", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+
+        // Convertir lista a texto (JSON)
+        val json = gson.toJson(listaDeGastos)
+
+        editor.putString("lista_gastos",json)
+        editor.apply() // Guardado
+
+    }
+
+    private fun cargarDatos() {
+        val sharedPreferences = getSharedPreferences("mis_gastos", MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("lista_gastos", null)
+
+        if (json != null) {
+            // Convertimos el texto de nuevo a una lista de objetos Gasto
+            val type = object : TypeToken<MutableList<Gasto>>() {}.type
+            val listaGuardada: MutableList<Gasto> = gson.fromJson(json, type)
+
+            listaDeGastos.clear()
+            listaDeGastos.addAll(listaGuardada)
+        }
+
+    }
+
 }
